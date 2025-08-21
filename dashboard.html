@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrothersCloud - Dashboard</title>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+  <header>
+    <img src="assets/Logo.png" alt="BrothersCloud Logo" class="logo" />
+    <div class="user-info">
+      <button id="modeToggle" class="mode-btn">🌙</button>
+      <span id="userName"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <section class="controls">
+    <input type="text" id="searchInput" placeholder="Search files/events..."/>
+    <button id="uploadBtn">Upload</button>
+  </section>
+
+  <nav class="menu">
+    <button class="menu-btn active" data-type="images">Images</button>
+    <button class="menu-btn" data-type="documents">Documents</button>
+    <button class="menu-btn" data-type="videos">Videos</button>
+    <button class="menu-btn" data-type="calendar">Calendar</button>
+  </nav>
+
+  <main id="content">
+    <!-- Dynamic content will appear here -->
+  </main>
+
+  <script src="js/dashboard.js"></script>
+  <script src="js/theme.js"></script>
+</body>
+</html>

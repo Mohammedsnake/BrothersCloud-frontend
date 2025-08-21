@@ -1,0 +1,665 @@
+/* upload.css */
+
+/* ===========================
+   Base Styles & Reset
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #4361ee;
+  --primary-dark: #3a56d4;
+  --secondary: #7209b7;
+  --accent: #f72585;
+  --success: #4cc9f0;
+  --warning: #f9c74f;
+  --danger: #f94144;
+  --dark: #2b2d42;
+  --light: #f8f9fa;
+  --gray-100: #f1f3f9;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-600: #6c757d;
+  --gray-800: #343a40;
+  --gray-900: #212529;
+  
+  --border-radius: 16px;
+  --border-radius-sm: 8px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  color: var(--gray-900);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+/* ===========================
+   Light & Dark Mode
+=========================== */
+body.light-mode {
+  background: #f5f5f5;
+  color: #222;
+}
+
+body.light-mode header {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--dark);
+}
+
+body.light-mode .file-card,
+body.light-mode .event-list li,
+body.light-mode .modal-content {
+  background: white;
+  color: var(--dark);
+}
+
+body.dark-mode {
+  background: #1e1e1e;
+  color: #eee;
+}
+
+body.dark-mode header {
+  background: rgba(30, 30, 30, 0.9);
+  color: #eee;
+}
+
+body.dark-mode .file-card,
+body.dark-mode .event-list li,
+body.dark-mode .modal-content {
+  background: #2b2b2b;
+  color: #eee;
+}
+
+body.dark-mode #searchInput,
+body.dark-mode .menu-btn,
+body.dark-mode #uploadBtn,
+body.dark-mode #logoutBtn {
+  background: #3a3a3a;
+  color: #eee;
+  border-color: #555;
+}
+
+body.dark-mode .menu-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ===========================
+   Mode Toggle Button Styles
+=========================== */
+.mode-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 15px;
+  transition: transform 0.3s ease, color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode-btn:hover {
+  transform: rotate(20deg);
+}
+
+.mode-btn::before {
+  content: "🌙"; /* Default Moon icon for dark mode toggle */
+  font-size: 1.2rem;
+  transition: transform 0.3s ease, content 0.3s ease;
+}
+
+body.light-mode .mode-btn::before {
+  content: "☀️"; /* Sun icon when in light mode */
+}
+
+.mode-btn:active {
+  transform: scale(0.9) rotate(0deg);
+}
+
+/* ===========================
+   Header Styles
+=========================== */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--dark);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#backBtn {
+  padding: 0.75rem 1.5rem;
+  background: var(--gray-200);
+  color: var(--gray-800);
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow);
+}
+
+#backBtn:hover {
+  background: var(--gray-300);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+#backBtn::before {
+  content: "←";
+  font-weight: bold;
+}
+
+/* ===========================
+   Main Content Styles
+=========================== */
+main {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+/* ===========================
+   Form Styles
+=========================== */
+#uploadForm {
+  background: white;
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+}
+
+#uploadForm:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.form-group {
+  margin-bottom: 1.8rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: var(--dark);
+  font-size: 1rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+  transform: translateY(-2px);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+/* File input custom styling */
+.file-group input[type="file"] {
+  padding: 0.875rem;
+  border: 2px dashed var(--gray-300);
+  background: var(--gray-100);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.file-group input[type="file"]:hover {
+  border-color: var(--primary);
+  background: rgba(67, 97, 238, 0.05);
+}
+
+.file-group input[type="file"]::file-selector-button {
+  padding: 0.75rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-right: 1rem;
+}
+
+.file-group input[type="file"]::file-selector-button:hover {
+  background: var(--primary-dark);
+}
+
+/* Event group specific styles */
+.event-group {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f3ff 100%);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--gray-100);
+  margin-top: 1rem;
+}
+
+.event-group .form-group {
+  margin-bottom: 1.2rem;
+}
+
+.event-group label {
+  color: var(--primary-dark);
+}
+
+/* ================================
+   Flatpickr Custom Calendar Styles
+================================== */
+
+/* Calendar wrapper */
+.flatpickr-calendar {
+  background: url('../assets/bg2.jpg') center/cover no-repeat; /* Your custom background */
+  border: 2px solid #4CAF50;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.5s ease-in-out;
+  z-index: 1000 !important;
+}
+
+/* Smooth fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header with month/year */
+.flatpickr-months {
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border-bottom: 1px solid #4CAF50;
+  border-radius: 10px 10px 0 0;
+}
+
+/* Navigation arrows */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: #FFD700;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  color: #FF4500;
+}
+
+/* Weekdays row */
+.flatpickr-weekdays {
+  background: rgba(0,0,0,0.5);
+  color: #FFD700;
+}
+
+/* Days cells */
+.flatpickr-day {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.flatpickr-day:hover {
+  background: linear-gradient(135deg, #4CAF50, #81C784);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* Selected day */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: linear-gradient(135deg, #FF5722, #FF9800) !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px #FF9800;
+  font-weight: bold;
+}
+
+/* Today highlight */
+.flatpickr-day.today {
+  border: 2px solid #2196F3;
+  color: #fff;
+}
+
+/* Disabled days */
+.flatpickr-day.disabled {
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+}
+
+/* Footer / Time picker if used */
+.flatpickr-time {
+  background: rgba(0,0,0,0.6);
+  border-top: 1px solid #4CAF50;
+}
+
+/* Animations for days */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0px rgba(255,255,255,0.5); }
+  50% { box-shadow: 0 0 15px rgba(255,255,255,0.8); }
+  100% { box-shadow: 0 0 0px rgba(255,255,255,0.5); }
+}
+
+.flatpickr-day.today {
+  animation: pulse 2s infinite;
+}
+
+
+/* Submit button */
+#uploadForm button[type="submit"] {
+  width: 100%;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+#uploadForm button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, var(--primary-dark), #5e08a0);
+}
+
+#uploadForm button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+#uploadForm button[type="submit"]::before {
+  content: "📤";
+  font-size: 1.2rem;
+}
+
+/* ===========================
+   Message Styles
+=========================== */
+.message {
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  text-align: center;
+  transition: var(--transition);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message:not(:empty) {
+  background: var(--success);
+  color: white;
+}
+
+.message.error {
+  background: var(--danger);
+  color: white;
+}
+
+/* ===========================
+   Events List Styles
+=========================== */
+#eventsList {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+#eventsList h2 {
+  color: var(--dark);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.event-item {
+  background: var(--gray-100);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--primary);
+  transition: var(--transition);
+}
+
+.event-item:hover {
+  transform: translateX(5px);
+  box-shadow: var(--shadow);
+}
+
+.event-item strong {
+  color: var(--dark);
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.event-item p {
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.event-item small {
+  color: var(--gray-600);
+  font-style: italic;
+}
+
+#eventsList > p {
+  text-align: center;
+  color: var(--gray-600);
+  font-style: italic;
+  padding: 2rem;
+}
+
+/* ===========================
+   Responsive Design
+=========================== */
+@media (max-width: 768px) {
+  header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  header h1 {
+    font-size: 1.5rem;
+  }
+  
+  main {
+    padding: 0 1rem;
+    margin: 1rem auto;
+  }
+  
+  #uploadForm {
+    padding: 1.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .event-group {
+    padding: 1rem;
+  }
+  
+  #eventsList {
+    padding: 1.5rem;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.3rem;
+  }
+  
+  #backBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.875rem 1rem;
+  }
+  
+  #uploadForm button[type="submit"] {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  
+  .event-item {
+    padding: 1rem;
+  }
+}
+
+/* ===========================
+   Animation Utilities
+=========================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* ===========================
+   Loading State
+=========================== */
+#uploadForm.loading button[type="submit"] {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+#uploadForm.loading button[type="submit"]::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===========================
+   Focus States for Accessibility
+=========================== */
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.form-group textarea:focus-visible,
+#backBtn:focus-visible,
+#uploadForm button[type="submit"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ===========================
+   High Contrast Mode Support
+=========================== */
+@media (prefers-contrast: high) {
+  :root {
+    --gray-100: #ffffff;
+    --gray-200: #000000;
+    --gray-300: #000000;
+  }
+  
+  #uploadForm,
+  .event-item,
+  #eventsList {
+    border: 2px solid black;
+  }
+}
+
+/* ===========================
+   Reduced Motion Support
+=========================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

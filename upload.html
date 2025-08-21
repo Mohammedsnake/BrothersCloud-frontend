@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrothersCloud - Upload</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="css/upload.css"/>
+  <style>
+    /* Simple styling for event list */
+    #eventsList { margin-top: 20px; }
+    .event-item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BrothersCloud - Upload</h1>
+    <button type="button" id="backBtn">Back to Dashboard</button>
+  </header>
+
+  <main>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="uploadType">Select Type</label>
+        <select id="uploadType" name="file_type" required>
+          <option value="">--Choose--</option>
+          <option value="image">Image</option>
+          <option value="document">Document</option>
+          <option value="video">Video</option>
+          <option value="event">Event</option>
+        </select>
+      </div>
+
+      <div class="form-group file-group">
+        <label for="fileInput">Choose File</label>
+        <input type="file" id="fileInput" name="file"/>
+      </div>
+
+      <div class="form-group event-group" style="display:none;">
+        <label for="eventDate">Event Date</label>
+        <input type="text" id="eventDate" name="event_date" placeholder="Pick a date"/>
+        
+        <label for="eventRepetition">Repetition</label>
+        <select id="eventRepetition" name="event_repetition">
+          <option value="once">This year only</option>
+          <option value="yearly">Each year</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="itemName">Name</label>
+        <input type="text" id="itemName" name="file_name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="itemDesc">Description / More Info</label>
+        <textarea id="itemDesc" name="file_description" rows="4"></textarea>
+      </div>
+
+      <button type="submit">Upload</button>
+      <div id="message" class="message"></div>
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="js/upload.js"></script>
+  <script src="js/theme.js"></script>
+</body>
+</html>

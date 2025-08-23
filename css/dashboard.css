@@ -1,3 +1,5 @@
+/* dashboard.css */
+
 /* ===========================
    Base Styles & Reset
 =========================== */
@@ -42,17 +44,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   width: 100%;
-  font-size: clamp(0.9rem, 1.5vw, 1rem);
-}
-
-h1, h2, h3 {
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
-}
-
-/* Container for centered content */
-.container {
-  width: min(1200px, 100% - 2rem);
-  margin: 0 auto;
 }
 
 /* Dark/Light mode base styles */
@@ -123,14 +114,14 @@ header {
 #userName {
   font-weight: 600;
   color: var(--dark);
-  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  font-size: 0.95rem;
 }
 
 /* ===========================
    Logout Button Styles
 =========================== */
 #logoutBtn {
-  padding: clamp(0.4rem, 2vw, 0.5rem) clamp(0.8rem, 2.5vw, 1rem);
+  padding: 0.5rem 1rem;
   background: var(--danger);
   color: white;
   border: none;
@@ -141,9 +132,8 @@ header {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+  font-size: 0.9rem;
   box-shadow: var(--shadow);
-  min-height: 44px;
 }
 
 #logoutBtn:hover {
@@ -193,7 +183,7 @@ header {
 }
 
 #uploadBtn {
-  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1.25rem, 2.5vw, 1.5rem);
+  padding: 0.875rem 1.5rem;
   background: var(--primary);
   color: white;
   border: none;
@@ -206,7 +196,6 @@ header {
   align-items: center;
   gap: 0.5rem;
   white-space: nowrap;
-  min-height: 44px;
 }
 
 #uploadBtn:hover {
@@ -243,7 +232,7 @@ header {
 }
 
 .menu-btn {
-  padding: clamp(0.5rem, 2vw, 0.75rem) clamp(0.8rem, 2.5vw, 1.5rem);
+  padding: 0.75rem 1.5rem;
   background: white;
   border: 2px solid var(--gray-200);
   border-radius: var(--border-radius);
@@ -257,7 +246,6 @@ header {
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
-  min-height: 44px;
 }
 
 .menu-btn:hover {
@@ -393,7 +381,6 @@ main {
   align-items: center;
   justify-content: center;
   flex: 1;
-  min-height: 44px;
 }
 
 .btn-download:hover {
@@ -600,7 +587,6 @@ main {
   flex: 1;
   min-width: 120px;
   justify-content: center;
-  min-height: 44px;
 }
 
 .btn-download {
@@ -916,22 +902,8 @@ main {
   }
 }
 
-/* Extra-small adjustments for foldables & ultra-narrow screens */
-@media (max-width: 360px) {
-  body {
-    font-size: 0.9rem;
-  }
-
-  .controls,
-  .menu {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .file-grid {
-    grid-template-columns: 1fr;
-  }
-
+/* Very small phones */
+@media (max-width: 320px) {
   .menu-btn {
     min-width: 100%;
   }
@@ -953,17 +925,6 @@ main {
   }
 }
 
-/* Ultra-wide screens */
-@media (min-width: 1600px) {
-  body {
-    font-size: 1.1rem;
-  }
-
-  .file-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  }
-}
-
 /* Landscape orientation for mobile */
 @media (max-height: 500px) and (orientation: landscape) {
   header {
@@ -982,11 +943,6 @@ main {
   .modal-body video, 
   .modal-body iframe {
     max-height: 50vh;
-  }
-  
-  /* Prevent cramped grids in landscape */
-  .file-grid {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -1140,7 +1096,8 @@ main {
   }
   
   .file-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
   }
   
   .file-card {

@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
+  const loginBtn = form.querySelector("button[type='submit']");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -17,6 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("First name, last name, and password are required!");
       return;
     }
+
+    // Show spinner on button
+    loginBtn.classList.add("loading");
+    loginBtn.disabled = true;
 
     try {
       const res = await fetch("https://brotherscloud-1.onrender.com/api/auth/login", {
@@ -37,14 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // Save token in localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("user_id", data.user.user_id); // or data.user.id depending on your backend
-
+      localStorage.setItem("user_id", data.user.user_id);
 
       alert("Login successful!");
       window.location.href = "dashboard.html"; // redirect after login
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong. Please try again later.");
+    } finally {
+      // Hide spinner and enable button
+      loginBtn.classList.remove("loading");
+      loginBtn.disabled = false;
     }
   });
 });

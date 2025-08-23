@@ -43,6 +43,7 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
+  width: 100%;
 }
 
 /* Dark/Light mode base styles */
@@ -90,12 +91,14 @@ header {
   top: 0;
   z-index: 100;
   height: var(--header-height);
+  width: 100%;
 }
 
 .logo {
   height: 80px;
   width: auto;
   transition: var(--transition);
+  max-height: 60px;
 }
 
 .logo:hover {
@@ -156,10 +159,13 @@ header {
   gap: 1rem;
   padding: 1.5rem 2rem;
   background: transparent;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 #searchInput {
   flex: 1;
+  min-width: 250px;
   max-width: 500px;
   padding: 0.875rem 1.25rem;
   border: 2px solid var(--gray-200);
@@ -189,6 +195,7 @@ header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
 }
 
 #uploadBtn:hover {
@@ -216,6 +223,8 @@ header {
   padding: 0 2rem 1.5rem;
   overflow-x: auto;
   scrollbar-width: none;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .menu::-webkit-scrollbar {
@@ -236,6 +245,7 @@ header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .menu-btn:hover {
@@ -262,6 +272,7 @@ header {
 main {
   padding: 0 2rem 2rem;
   min-height: calc(100vh - var(--header-height) - 180px);
+  width: 100%;
 }
 
 /* ===========================
@@ -271,6 +282,7 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
+  width: 100%;
 }
 
 .file-card {
@@ -280,6 +292,7 @@ main {
   box-shadow: var(--shadow);
   transition: var(--transition);
   cursor: pointer;
+  max-width: 100%;
 }
 
 .file-card:hover {
@@ -295,6 +308,7 @@ main {
   justify-content: center;
   background: var(--gray-100);
   position: relative;
+  width: 100%;
 }
 
 .file-preview img {
@@ -327,6 +341,7 @@ main {
 
 .file-info {
   padding: 1.25rem;
+  width: 100%;
 }
 
 .file-name {
@@ -335,6 +350,7 @@ main {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 100%;
 }
 
 .file-meta {
@@ -343,11 +359,14 @@ main {
   font-size: 0.875rem;
   color: var(--gray-600);
   margin-bottom: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .file-actions {
   display: flex;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .btn-download, .btn-share {
@@ -361,6 +380,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
 }
 
 .btn-download:hover {
@@ -384,6 +404,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
 }
 
 .event-list li {
@@ -394,6 +415,7 @@ main {
   transition: var(--transition);
   display: flex;
   gap: 1rem;
+  width: 100%;
 }
 
 .event-list li:hover {
@@ -409,21 +431,27 @@ main {
   background: var(--gray-100);
   border-radius: var(--border-radius-sm);
   text-align: center;
+  flex-shrink: 0;
 }
 
 .event-content {
   flex: 1;
+  min-width: 0; /* Prevents flex item from overflowing */
 }
 
 .event-title {
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: var(--dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .event-description {
   color: var(--gray-600);
   margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .event-recurring {
@@ -434,6 +462,7 @@ main {
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* ===========================
@@ -453,6 +482,8 @@ main {
   z-index: 1000;
   opacity: 0;
   animation: modalFadeIn 0.3s forwards;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 @keyframes modalFadeIn {
@@ -462,7 +493,7 @@ main {
 .modal-content {
   background: white;
   border-radius: var(--border-radius);
-  width: 90%;
+  width: 100%;
   max-width: 800px;
   max-height: 90vh;
   overflow: hidden;
@@ -483,11 +514,16 @@ main {
   align-items: center;
   padding: 1.5rem;
   border-bottom: 1px solid var(--gray-200);
+  width: 100%;
 }
 
 .modal-header h3 {
   font-weight: 600;
   color: var(--dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80%;
 }
 
 .btn-close {
@@ -497,6 +533,7 @@ main {
   cursor: pointer;
   color: var(--gray-600);
   transition: var(--transition);
+  flex-shrink: 0;
 }
 
 .btn-close:hover {
@@ -510,12 +547,14 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 .modal-body img, .modal-body video {
   max-width: 100%;
   max-height: 60vh;
   border-radius: var(--border-radius-sm);
+  object-fit: contain;
 }
 
 .modal-body iframe {
@@ -531,6 +570,8 @@ main {
   padding: 1.5rem;
   border-top: 1px solid var(--gray-200);
   justify-content: flex-end;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .modal-footer .btn {
@@ -543,6 +584,9 @@ main {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 120px;
+  justify-content: center;
 }
 
 .btn-download {
@@ -577,6 +621,7 @@ main {
   text-align: center;
   padding: 3rem 2rem;
   color: var(--gray-600);
+  width: 100%;
 }
 
 .empty-state i, .error-state i {
@@ -606,6 +651,8 @@ main {
   transform: translateY(100px);
   opacity: 0;
   transition: var(--transition);
+  max-width: 350px;
+  width: auto;
 }
 
 .toast.show {
@@ -624,6 +671,35 @@ main {
 /* ===========================
    Responsive Design
 =========================== */
+/* Tablets and smaller desktops */
+@media (max-width: 1024px) {
+  :root {
+    --header-height: 65px;
+  }
+  
+  header {
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .logo {
+    height: 70px;
+  }
+  
+  .controls {
+    padding: 1.25rem 1.5rem;
+  }
+  
+  main {
+    padding: 0 1.5rem 1.5rem;
+  }
+  
+  .file-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+/* Tablets and large phones */
 @media (max-width: 768px) {
   :root {
     --header-height: 60px;
@@ -633,6 +709,10 @@ main {
     padding: 0.75rem 1rem;
     flex-wrap: wrap;
     gap: 1rem;
+  }
+  
+  .logo {
+    height: 60px;
   }
   
   .user-info {
@@ -647,8 +727,19 @@ main {
     flex-direction: column;
   }
   
+  #searchInput {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
   .menu {
     padding: 0 1rem 1rem;
+    gap: 0.5rem;
+  }
+  
+  .menu-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
   }
   
   main {
@@ -656,12 +747,17 @@ main {
   }
   
   .file-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
+  }
+  
+  .file-preview {
+    height: 160px;
   }
   
   .event-list li {
     flex-direction: column;
+    gap: 0.75rem;
   }
   
   .event-date {
@@ -670,14 +766,39 @@ main {
   
   .modal-content {
     width: 95%;
+    max-height: 85vh;
   }
   
   .modal-footer {
     flex-direction: column;
   }
+  
+  .modal-footer .btn {
+    width: 100%;
+  }
+  
+  .toast {
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
 }
 
+/* Mobile phones */
 @media (max-width: 480px) {
+  :root {
+    --header-height: 55px;
+    --border-radius: 10px;
+  }
+  
+  header {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .logo {
+    height: 50px;
+  }
+  
   .user-info {
     flex-direction: row;
     align-items: center;
@@ -693,23 +814,145 @@ main {
     font-size: 0.8rem;
   }
   
+  .controls {
+    padding: 0.75rem;
+  }
+  
+  #searchInput {
+    padding: 0.75rem 1rem;
+  }
+  
+  #uploadBtn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
   .menu {
+    padding: 0 0.75rem 0.75rem;
     gap: 0.25rem;
   }
   
   .menu-btn {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
+    flex: 1;
+    min-width: calc(50% - 0.25rem);
+    justify-content: center;
+  }
+  
+  main {
+    padding: 0 0.75rem 0.75rem;
   }
   
   .file-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .file-preview {
+    height: 140px;
+  }
+  
+  .file-info {
+    padding: 1rem;
+  }
+  
+  .event-list li {
+    padding: 1rem;
+  }
+  
+  .event-date {
+    min-width: 80px;
+    font-size: 0.9rem;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-footer {
+    padding: 1rem;
+  }
+  
+  .modal-footer .btn {
+    padding: 0.6rem 1.2rem;
   }
   
   .toast {
-    left: 1rem;
-    right: 1rem;
     bottom: 1rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .empty-state, .error-state {
+    padding: 2rem 1rem;
+  }
+  
+  .empty-state i, .error-state i {
+    font-size: 3rem;
+  }
+  
+  .empty-state p, .error-state p {
+    font-size: 1rem;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 320px) {
+  .menu-btn {
+    min-width: 100%;
+  }
+  
+  .user-info {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  #logoutBtn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  
+  .modal-content {
+    width: 100%;
+    border-radius: 0;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  header {
+    position: static;
+  }
+  
+  .file-preview {
+    height: 120px;
+  }
+  
+  .modal-content {
+    max-height: 80vh;
+  }
+  
+  .modal-body img, 
+  .modal-body video, 
+  .modal-body iframe {
+    max-height: 50vh;
+  }
+}
+
+/* ===========================
+   High DPI (Retina) Displays
+=========================== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .logo {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }
 
@@ -781,5 +1024,89 @@ main {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  
+  .file-card:hover,
+  .menu-btn:hover,
+  #logoutBtn:hover,
+  #uploadBtn:hover,
+  .event-list li:hover {
+    transform: none;
+  }
+  
+  .file-card:hover .file-preview img {
+    transform: none;
+  }
+}
+
+/* ===========================
+   Touch Device Optimizations
+=========================== */
+@media (hover: none) and (pointer: coarse) {
+  .file-card:hover {
+    transform: none;
+  }
+  
+  .menu-btn:hover {
+    transform: none;
+    border-color: var(--gray-200);
+    color: var(--gray-600);
+  }
+  
+  .menu-btn.active:hover {
+    background: var(--primary);
+    color: white;
+  }
+  
+  #logoutBtn:hover,
+  #uploadBtn:hover {
+    transform: none;
+  }
+  
+  /* Increase tap targets for touch devices */
+  .menu-btn,
+  #logoutBtn,
+  #uploadBtn,
+  .btn-download,
+  .btn-share {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .file-card {
+    cursor: default;
+  }
+}
+
+/* ===========================
+   Print Styles
+=========================== */
+@media print {
+  header,
+  .controls,
+  .menu,
+  .file-actions,
+  .modal-footer {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .file-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .file-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+  
+  main {
+    padding: 0 !important;
   }
 }

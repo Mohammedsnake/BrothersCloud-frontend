@@ -33,6 +33,11 @@
   --transition: all 0.3s ease;
 }
 
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
@@ -41,6 +46,8 @@ body {
   min-height: 100vh;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===========================
@@ -107,10 +114,18 @@ body.dark-mode .menu-btn.active {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
 }
 
 .mode-btn:hover {
   transform: rotate(20deg);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .mode-btn::before {
@@ -133,7 +148,7 @@ body.light-mode .mode-btn::before {
 header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 1.5rem 2rem;
+  padding: 1rem;
   box-shadow: var(--shadow);
   display: flex;
   justify-content: space-between;
@@ -141,20 +156,39 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 header h1 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--dark);
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 #backBtn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   background: var(--gray-200);
   color: var(--gray-800);
   border: none;
@@ -166,6 +200,7 @@ header h1 {
   align-items: center;
   gap: 0.5rem;
   box-shadow: var(--shadow);
+  white-space: nowrap;
 }
 
 #backBtn:hover {
@@ -185,7 +220,9 @@ header h1 {
 main {
   max-width: 800px;
   margin: 2rem auto;
-  padding: 0 2rem;
+  padding: 0 1rem;
+  width: 100%;
+  flex: 1;
 }
 
 /* ===========================
@@ -193,10 +230,11 @@ main {
 =========================== */
 #uploadForm {
   background: white;
-  padding: 2.5rem;
+  padding: 1.5rem;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-lg);
   transition: var(--transition);
+  width: 100%;
 }
 
 #uploadForm:hover {
@@ -205,7 +243,7 @@ main {
 }
 
 .form-group {
-  margin-bottom: 1.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
@@ -220,12 +258,13 @@ main {
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: 0.875rem 1rem;
   border: 2px solid var(--gray-200);
   border-radius: var(--border-radius);
   font-size: 1rem;
   transition: var(--transition);
   background: white;
+  font-family: inherit;
 }
 
 .form-group input:focus,
@@ -240,12 +279,11 @@ main {
 .form-group textarea {
   resize: vertical;
   min-height: 120px;
-  font-family: inherit;
 }
 
 /* File input custom styling */
 .file-group input[type="file"] {
-  padding: 0.875rem;
+  padding: 0.75rem;
   border: 2px dashed var(--gray-300);
   background: var(--gray-100);
   cursor: pointer;
@@ -258,7 +296,7 @@ main {
 }
 
 .file-group input[type="file"]::file-selector-button {
-  padding: 0.75rem 1.25rem;
+  padding: 0.6rem 1rem;
   background: var(--primary);
   color: white;
   border: none;
@@ -266,7 +304,8 @@ main {
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  margin-right: 1rem;
+  margin-right: 0.75rem;
+  font-family: inherit;
 }
 
 .file-group input[type="file"]::file-selector-button:hover {
@@ -276,7 +315,7 @@ main {
 /* Event group specific styles */
 .event-group {
   background: linear-gradient(135deg, #f8f9ff 0%, #f0f3ff 100%);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--border-radius);
   border: 2px solid var(--gray-100);
   margin-top: 1rem;
@@ -390,16 +429,15 @@ main {
   animation: pulse 2s infinite;
 }
 
-
 /* Submit button */
 #uploadForm button[type="submit"] {
   width: 100%;
-  padding: 1.25rem;
+  padding: 1rem;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   border: none;
   border-radius: var(--border-radius);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
@@ -431,7 +469,7 @@ main {
 =========================== */
 .message {
   margin-top: 1.5rem;
-  padding: 1rem 1.5rem;
+  padding: 1rem;
   border-radius: var(--border-radius);
   font-weight: 600;
   text-align: center;
@@ -464,24 +502,25 @@ main {
    Events List Styles
 =========================== */
 #eventsList {
-  margin-top: 3rem;
-  padding: 2rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
   background: white;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
+  width: 100%;
 }
 
 #eventsList h2 {
   color: var(--dark);
   margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
   text-align: center;
 }
 
 .event-item {
   background: var(--gray-100);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--border-radius);
   margin-bottom: 1rem;
   border-left: 4px solid var(--primary);
@@ -495,7 +534,7 @@ main {
 
 .event-item strong {
   color: var(--dark);
-  font-size: 1.1rem;
+  font-size: 1rem;
   display: block;
   margin-bottom: 0.5rem;
 }
@@ -515,48 +554,80 @@ main {
   text-align: center;
   color: var(--gray-600);
   font-style: italic;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 /* ===========================
    Responsive Design
 =========================== */
-@media (max-width: 768px) {
+
+/* Tablets and medium devices */
+@media (min-width: 481px) and (max-width: 768px) {
   header {
-    padding: 1rem;
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+    padding: 1rem 1.5rem;
   }
   
   header h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   
   main {
-    padding: 0 1rem;
-    margin: 1rem auto;
+    padding: 0 1.5rem;
   }
   
   #uploadForm {
-    padding: 1.5rem;
-  }
-  
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
-  .event-group {
-    padding: 1rem;
-  }
-  
-  #eventsList {
-    padding: 1.5rem;
-    margin-top: 2rem;
+    padding: 2rem;
   }
 }
 
+/* Desktop and larger devices */
+@media (min-width: 769px) {
+  header {
+    padding: 1.5rem 2rem;
+  }
+  
+  header h1 {
+    font-size: 1.8rem;
+  }
+  
+  main {
+    padding: 0 2rem;
+  }
+  
+  #uploadForm {
+    padding: 2.5rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 1rem 1.25rem;
+  }
+  
+  #uploadForm button[type="submit"] {
+    padding: 1.25rem;
+    font-size: 1.1rem;
+  }
+}
+
+/* Small mobile devices */
 @media (max-width: 480px) {
+  header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
   header h1 {
     font-size: 1.3rem;
   }
@@ -569,16 +640,59 @@ main {
   .form-group input,
   .form-group select,
   .form-group textarea {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem;
   }
   
-  #uploadForm button[type="submit"] {
+  .file-group input[type="file"]::file-selector-button {
+    padding: 0.5rem 0.75rem;
+    margin-right: 0.5rem;
+  }
+  
+  .event-group {
     padding: 1rem;
-    font-size: 1rem;
   }
   
   .event-item {
     padding: 1rem;
+  }
+}
+
+/* Extra small devices (less than 360px) */
+@media (max-width: 359px) {
+  :root {
+    --border-radius: 12px;
+    --border-radius-sm: 6px;
+  }
+  
+  header h1 {
+    font-size: 1.1rem;
+  }
+  
+  #backBtn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .mode-btn {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+  
+  #uploadForm button[type="submit"] {
+    padding: 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -610,8 +724,8 @@ main {
 
 #uploadForm.loading button[type="submit"]::after {
   content: "";
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 2px solid transparent;
   border-top: 2px solid white;
   border-radius: 50%;
@@ -631,7 +745,8 @@ main {
 .form-group select:focus-visible,
 .form-group textarea:focus-visible,
 #backBtn:focus-visible,
-#uploadForm button[type="submit"]:focus-visible {
+#uploadForm button[type="submit"]:focus-visible,
+.mode-btn:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
@@ -657,9 +772,48 @@ main {
    Reduced Motion Support
 =========================== */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===========================
+   Orientation-specific adjustments
+=========================== */
+@media (max-height: 500px) and (orientation: landscape) {
+  header {
+    position: static;
+  }
+  
+  main {
+    margin: 1rem auto;
+  }
+}
+
+/* ===========================
+   Print Styles
+=========================== */
+@media print {
+  header,
+  #backBtn,
+  .mode-btn,
+  #uploadForm button[type="submit"] {
+    display: none !important;
+  }
+  
+  #uploadForm,
+  #eventsList {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  body, .event-item, #uploadForm {
+    background: white !important;
+    color: black !important;
   }
 }

@@ -10,7 +10,6 @@ const utils = {
     toast.textContent = message;
     document.body.appendChild(toast);
 
-    // Trigger animation
     setTimeout(() => {
       toast.classList.add("show");
       setTimeout(() => {
@@ -243,7 +242,7 @@ class Dashboard {
       <div class="file-grid">
         ${files
           .map((file) => {
-            const filePath = `https://brotherscloud-1.onrender.com${file.file_path}`;
+            const filePath = file.cloudinary_url || `https://brotherscloud-1.onrender.com${file.file_path}`;
             const ext = (file.file_name || "unknown").split(".").pop().toLowerCase();
             let normalizedType = (file.file_type || "document").toLowerCase();
 

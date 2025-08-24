@@ -27,9 +27,13 @@ const utils = {
   formatDate: (dateString) => {
     if (!dateString) return "Unknown Date";
     const date = new Date(dateString);
-    if (isNaN(date)) return "Unknown Date";
-    const options = { year: "numeric", month: "short", day: "numeric" };
-    return date.toLocaleDateString(undefined, options);
+    return isNaN(date)
+      ? "Unknown Date"
+      : date.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
   },
 };
 
@@ -78,10 +82,12 @@ class Dashboard {
     this.elements.searchInput.addEventListener("input", () =>
       this.handleSearch()
     );
+
     this.elements.uploadBtn.addEventListener(
       "click",
       () => (window.location.href = "upload.html")
     );
+
     this.elements.logoutBtn.addEventListener("click", this.logout);
   }
 
@@ -106,8 +112,9 @@ class Dashboard {
         headers: { Authorization: `Bearer ${this.token}` },
       });
 
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       this.allData = await response.json();
 
@@ -140,13 +147,17 @@ class Dashboard {
       return;
     }
 
-    const html =
-      type === "calendar" ? this.renderEvents(data) : this.renderFiles(data, type);
-    this.elements.content.innerHTML = html;
+    this.elements.content.innerHTML =
+      type === "calendar"
+        ? this.renderEvents(data)
+        : this.renderFiles(data, type);
 
     if (type !== "calendar") this.setupFileInteractions();
   }
 
+  /* ===========================
+     Calendar
+  =========================== */
   renderEvents(events) {
     return `
       <ul class="event-list">
@@ -211,7 +222,7 @@ class Dashboard {
       };
 
       checkNotifications();
-      setInterval(checkNotifications, 3600000); // hourly
+      setInterval(checkNotifications, 3600000); // check hourly
     });
   }
 
@@ -237,21 +248,29 @@ class Dashboard {
     });
   }
 
+  /* ===========================
+     Files
+  =========================== */
   renderFiles(files, type) {
     return `
       <div class="file-grid">
         ${files
           .map((file) => {
-            const filePath = file.cloudinary_url || `https://brotherscloud-1.onrender.com${file.file_path}`;
-            const ext = (file.file_name || "unknown").split(".").pop().toLowerCase();
+            const filePath =
+              file.cloudinary_url ||
+              `https://brotherscloud-1.onrender.com${file.file_path}`;
+            const ext = (file.file_name || "unknown")
+              .split(".")
+              .pop()
+              .toLowerCase();
             let normalizedType = (file.file_type || "document").toLowerCase();
 
             let previewContent = "";
-            if (normalizedType === "image")
+            if (normalizedType === "image") {
               previewContent = `<img src="${filePath}" alt="${file.file_name}" loading="lazy">`;
-            else if (normalizedType === "video")
+            } else if (normalizedType === "video") {
               previewContent = `<video src="${filePath}" controls muted></video>`;
-            else {
+            } else {
               previewContent = `<div class="file-icon ${this.getDocumentIconClass(
                 ext
               )}"></div>`;
@@ -264,14 +283,22 @@ class Dashboard {
                 <div class="file-info">
                   <div class="file-name" title="${file.file_name}">${file.file_name}</div>
                   <div class="file-meta">
-                    <span class="file-size">${this.formatFileSize(file.file_size)}</span>
+                    <span class="file-size">${this.formatFileSize(
+                      file.file_size
+                    )}</span>
                     <span class="file-date">${
                       file.uploaded_at ? utils.formatDate(file.uploaded_at) : ""
                     }</span>
                   </div>
                   <div class="file-actions">
-                    <button class="btn-download" data-path="${filePath}"><i class="icon-download"></i></button>
-                    <button class="btn-share" data-path="${filePath}" data-name="${file.file_name}"><i class="icon-share"></i></button>
+                    <button class="btn-download" data-path="${filePath}">
+                      <i class="icon-download"></i>
+                    </button>
+                    <button class="btn-share" data-path="${filePath}" data-name="${
+              file.file_name
+            }">
+                      <i class="icon-share"></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -301,7 +328,9 @@ class Dashboard {
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    return (
+      parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+    );
   }
 
   setupFileInteractions() {
@@ -359,15 +388,18 @@ class Dashboard {
 
     const ext = name.split(".").pop().toLowerCase();
     let bodyContent = "";
-    if (type === "image") bodyContent = `<img src="${url}" alt="${name}">`;
-    else if (type === "video")
+
+    if (type === "image") {
+      bodyContent = `<img src="${url}" alt="${name}">`;
+    } else if (type === "video") {
       bodyContent = `<video src="${url}" controls autoplay></video>`;
-    else if (ext === "pdf")
-      bodyContent = `<iframe src="${url}" frameborder="0"></iframe>`;
-    else
-      bodyContent = `<div class="file-icon ${this.getDocumentIconClass(
-        ext
-      )}"></div><p>Cannot preview this file. Click Download to open.</p>`;
+    } else if (ext === "pdf") {
+      bodyContent = `<iframe src="${url}#toolbar=0" width="100%" height="600px" style="border:none;"></iframe>`;
+    } else {
+      bodyContent = `
+        <div class="file-icon ${this.getDocumentIconClass(ext)}"></div>
+        <p>Cannot preview this file. Click Download to open.</p>`;
+    }
 
     modal.innerHTML = `
       <div class="modal-content">
@@ -383,7 +415,9 @@ class Dashboard {
       </div>
     `;
 
-    modal.querySelector(".btn-close").addEventListener("click", () => modal.remove());
+    modal.querySelector(".btn-close").addEventListener("click", () =>
+      modal.remove()
+    );
     modal.querySelector(".btn-download").addEventListener("click", () =>
       this.downloadFile(url)
     );
@@ -394,6 +428,7 @@ class Dashboard {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) modal.remove();
     });
+
     document.addEventListener("keydown", function escListener(e) {
       if (e.key === "Escape") {
         modal.remove();
@@ -404,6 +439,9 @@ class Dashboard {
     document.body.appendChild(modal);
   }
 
+  /* ===========================
+     Navigation + Search
+  =========================== */
   handleMenuClick(btn) {
     this.elements.menuButtons.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");

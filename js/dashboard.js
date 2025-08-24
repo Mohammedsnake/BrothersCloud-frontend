@@ -7,7 +7,7 @@ const utils = {
   showToast: (message, type = "success") => {
     const toast = document.createElement("div");
     toast.className = `toast ${type}`;
-    toast.textContent = message;
+    toast.textContent = message; // ✅ fixed (removed stray "s")
     document.body.appendChild(toast);
 
     setTimeout(() => {
@@ -270,6 +270,9 @@ class Dashboard {
               previewContent = `<img src="${filePath}" alt="${file.file_name}" loading="lazy">`;
             } else if (normalizedType === "video") {
               previewContent = `<video src="${filePath}" controls muted></video>`;
+            } else if (ext === "pdf") {
+              previewContent = `<div class="file-icon pdf"></div>`;
+              normalizedType = "document";
             } else {
               previewContent = `<div class="file-icon ${this.getDocumentIconClass(
                 ext
@@ -278,7 +281,7 @@ class Dashboard {
             }
 
             return `
-              <div class="file-card" data-path="${filePath}" data-type="${normalizedType}">
+              <div class="file-card" data-path="${filePath}" data-type="${normalizedType}" data-ext="${ext}">
                 <div class="file-preview">${previewContent}</div>
                 <div class="file-info">
                   <div class="file-name" title="${file.file_name}">${file.file_name}</div>
@@ -339,7 +342,8 @@ class Dashboard {
         if (!e.target.closest(".file-actions")) {
           const type = card.dataset.type;
           const name = card.querySelector(".file-name").textContent;
-          this.openModal(card.dataset.path, type, name);
+          const ext = card.dataset.ext;
+          this.openModal(card.dataset.path, type, name, ext);
         }
       });
     });
@@ -382,11 +386,10 @@ class Dashboard {
     }
   }
 
-  openModal(url, type, name = "") {
+  openModal(url, type, name = "", ext = "") {
     const modal = document.createElement("div");
     modal.className = "modal";
 
-    const ext = name.split(".").pop().toLowerCase();
     let bodyContent = "";
 
     if (type === "image") {
@@ -394,7 +397,16 @@ class Dashboard {
     } else if (type === "video") {
       bodyContent = `<video src="${url}" controls autoplay></video>`;
     } else if (ext === "pdf") {
-      bodyContent = `<iframe src="${url}#toolbar=0" width="100%" height="600px" style="border:none;"></iframe>`;
+      // ✅ Try direct PDF, fallback to Google Docs if blocked
+      bodyContent = `
+        <iframe src="${url}" width="100%" height="600px" style="border:none;" onerror="this.src='https://docs.google.com/gview?url=${encodeURIComponent(
+          url
+        )}&embedded=true'"></iframe>
+      `;
+    } else if (["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
+      bodyContent = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(
+        url
+      )}&embedded=true" width="100%" height="600px" style="border:none;"></iframe>`;
     } else {
       bodyContent = `
         <div class="file-icon ${this.getDocumentIconClass(ext)}"></div>

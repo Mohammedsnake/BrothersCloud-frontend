@@ -1,3 +1,4 @@
+// public/js/dashboard.js
 const API_BASE = "https://brotherscloud-1.onrender.com/api";
 
 /* ===========================
@@ -7,7 +8,7 @@ const utils = {
   showToast: (message, type = "success") => {
     const toast = document.createElement("div");
     toast.className = `toast ${type}`;
-    toast.textContent = message; // ✅ fixed (removed stray "s")
+    toast.textContent = message;
     document.body.appendChild(toast);
 
     setTimeout(() => {
@@ -34,6 +35,22 @@ const utils = {
           month: "short",
           day: "numeric",
         });
+  },
+
+  showLoader: () => {
+    let loader = document.getElementById("loader");
+    if (!loader) {
+      loader = document.createElement("div");
+      loader.id = "loader";
+      loader.innerHTML = `<div class="spinner"></div>`;
+      document.body.appendChild(loader);
+    }
+    loader.style.display = "flex";
+  },
+
+  hideLoader: () => {
+    const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "none";
   },
 };
 
@@ -103,6 +120,7 @@ class Dashboard {
 
   async loadData(type) {
     try {
+      utils.showLoader(); // Show spinner
       const url =
         type === "calendar"
           ? `${API_BASE}/events?user_id=${this.user.user_id}`
@@ -133,6 +151,8 @@ class Dashboard {
           <p>Failed to load data. Please try again later.</p>
         </div>
       `;
+    } finally {
+      utils.hideLoader(); // Hide spinner
     }
   }
 
@@ -203,9 +223,7 @@ class Dashboard {
 
           if (diffDays === 3 && !ev.notified_before) {
             new Notification(`Upcoming Event: ${ev.event_name}`, {
-              body: `Event in 3 days: ${
-                ev.event_description || "No description"
-              }`,
+              body: `Event in 3 days: ${ev.event_description || "No description"}`,
             });
 
             try {
@@ -222,7 +240,7 @@ class Dashboard {
       };
 
       checkNotifications();
-      setInterval(checkNotifications, 3600000); // check hourly
+      setInterval(checkNotifications, 3600000);
     });
   }
 
@@ -235,10 +253,7 @@ class Dashboard {
       const now = new Date();
       this.events.forEach((ev) => {
         const eventDate = new Date(ev.event_date);
-        if (
-          eventDate.toDateString() === now.toDateString() &&
-          !ev.notified_today
-        ) {
+        if (eventDate.toDateString() === now.toDateString() && !ev.notified_today) {
           new Notification(`Today's Event: ${ev.event_name}`, {
             body: ev.event_description || "No description",
           });
@@ -256,50 +271,42 @@ class Dashboard {
       <div class="file-grid">
         ${files
           .map((file) => {
-            const filePath =
-              file.cloudinary_url ||
-              `https://brotherscloud-1.onrender.com${file.file_path}`;
-            const ext = (file.file_name || "unknown")
-              .split(".")
-              .pop()
-              .toLowerCase();
+            const viewUrl = file.view_url || file.cloudinary_url || "#";
+            const downloadUrl = file.download_url || this.makeAttachmentUrl(viewUrl, file.file_name);
+
+            const ext = (file.file_name || "unknown").split(".").pop().toLowerCase();
             let normalizedType = (file.file_type || "document").toLowerCase();
 
             let previewContent = "";
             if (normalizedType === "image") {
-              previewContent = `<img src="${filePath}" alt="${file.file_name}" loading="lazy">`;
+              previewContent = `<img src="${viewUrl}" alt="${file.file_name}" loading="lazy">`;
             } else if (normalizedType === "video") {
-              previewContent = `<video src="${filePath}" controls muted></video>`;
+              previewContent = `<video src="${viewUrl}" controls muted></video>`;
             } else if (ext === "pdf") {
               previewContent = `<div class="file-icon pdf"></div>`;
-              normalizedType = "document";
             } else {
-              previewContent = `<div class="file-icon ${this.getDocumentIconClass(
-                ext
-              )}"></div>`;
-              normalizedType = "document";
+              previewContent = `<div class="file-icon ${this.getDocumentIconClass(ext)}"></div>`;
             }
 
             return `
-              <div class="file-card" data-path="${filePath}" data-type="${normalizedType}" data-ext="${ext}">
+              <div class="file-card"
+                   data-view="${viewUrl}"
+                   data-download="${downloadUrl}"
+                   data-type="${normalizedType}"
+                   data-ext="${ext}"
+                   data-name="${file.file_name}">
                 <div class="file-preview">${previewContent}</div>
                 <div class="file-info">
                   <div class="file-name" title="${file.file_name}">${file.file_name}</div>
                   <div class="file-meta">
-                    <span class="file-size">${this.formatFileSize(
-                      file.file_size
-                    )}</span>
-                    <span class="file-date">${
-                      file.uploaded_at ? utils.formatDate(file.uploaded_at) : ""
-                    }</span>
+                    <span class="file-size">${this.formatFileSize(file.file_size)}</span>
+                    <span class="file-date">${file.uploaded_at ? utils.formatDate(file.uploaded_at) : ""}</span>
                   </div>
                   <div class="file-actions">
-                    <button class="btn-download" data-path="${filePath}">
+                    <button class="btn-download" data-url="${downloadUrl}">
                       <i class="icon-download"></i>
                     </button>
-                    <button class="btn-share" data-path="${filePath}" data-name="${
-              file.file_name
-            }">
+                    <button class="btn-share" data-url="${viewUrl}" data-name="${file.file_name}">
                       <i class="icon-share"></i>
                     </button>
                   </div>
@@ -310,6 +317,21 @@ class Dashboard {
           .join("")}
       </div>
     `;
+  }
+
+  makeAttachmentUrl(viewUrl, fileName = "file") {
+    try {
+      const url = new URL(viewUrl);
+      const parts = url.pathname.split('/');
+      const uploadIdx = parts.findIndex((p) => p === 'upload');
+      if (uploadIdx !== -1) {
+        const safe = fileName.replace(/[^\w.\-()\s]/g, '_') || 'file';
+        parts.splice(uploadIdx + 1, 0, `fl_attachment:${safe}`);
+        url.pathname = parts.join('/');
+        return url.toString();
+      }
+    } catch (_) {}
+    return viewUrl;
   }
 
   getDocumentIconClass(ext) {
@@ -331,19 +353,20 @@ class Dashboard {
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (
-      parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-    );
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
   setupFileInteractions() {
     document.querySelectorAll(".file-card").forEach((card) => {
       card.addEventListener("click", (e) => {
         if (!e.target.closest(".file-actions")) {
-          const type = card.dataset.type;
-          const name = card.querySelector(".file-name").textContent;
-          const ext = card.dataset.ext;
-          this.openModal(card.dataset.path, type, name, ext);
+          this.openModal(
+            card.dataset.view,
+            card.dataset.download,
+            card.dataset.type,
+            card.dataset.name,
+            card.dataset.ext
+          );
         }
       });
     });
@@ -351,25 +374,20 @@ class Dashboard {
     document.querySelectorAll(".btn-download").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.downloadFile(btn.dataset.path);
+        this.downloadFile(btn.dataset.url);
       });
     });
 
     document.querySelectorAll(".btn-share").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.shareFile(btn.dataset.path, btn.dataset.name);
+        this.shareFile(btn.dataset.url, btn.dataset.name);
       });
     });
   }
 
   downloadFile(url) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = url.split("/").pop();
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    window.open(url, "_blank");
     utils.showToast("Download started");
   }
 
@@ -386,27 +404,28 @@ class Dashboard {
     }
   }
 
-  openModal(url, type, name = "", ext = "") {
+  openModal(viewUrl, downloadUrl, type, name = "", ext = "") {
     const modal = document.createElement("div");
     modal.className = "modal";
 
     let bodyContent = "";
 
     if (type === "image") {
-      bodyContent = `<img src="${url}" alt="${name}">`;
+      bodyContent = `<img src="${viewUrl}" alt="${name}">`;
     } else if (type === "video") {
-      bodyContent = `<video src="${url}" controls autoplay></video>`;
-    } else if (ext === "pdf") {
-      // ✅ Try direct PDF, fallback to Google Docs if blocked
+      bodyContent = `<video src="${viewUrl}" controls autoplay></video>`;
+    } else if (["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
+      const gview = `https://docs.google.com/gview?url=${encodeURIComponent(viewUrl)}&embedded=true`;
       bodyContent = `
-        <iframe src="${url}" width="100%" height="600px" style="border:none;" onerror="this.src='https://docs.google.com/gview?url=${encodeURIComponent(
-          url
-        )}&embedded=true'"></iframe>
+        <div class="gdoc-viewer-wrapper">
+          <iframe src="${gview}" width="100%" height="600px" style="border:none;"></iframe>
+          <div class="viewer-download">
+            <a href="${downloadUrl}" target="_blank" class="btn btn-download">
+              <i class="icon-download"></i> Download
+            </a>
+          </div>
+        </div>
       `;
-    } else if (["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
-      bodyContent = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(
-        url
-      )}&embedded=true" width="100%" height="600px" style="border:none;"></iframe>`;
     } else {
       bodyContent = `
         <div class="file-icon ${this.getDocumentIconClass(ext)}"></div>
@@ -427,15 +446,9 @@ class Dashboard {
       </div>
     `;
 
-    modal.querySelector(".btn-close").addEventListener("click", () =>
-      modal.remove()
-    );
-    modal.querySelector(".btn-download").addEventListener("click", () =>
-      this.downloadFile(url)
-    );
-    modal.querySelector(".btn-share").addEventListener("click", () =>
-      this.shareFile(url, name)
-    );
+    modal.querySelector(".btn-close").addEventListener("click", () => modal.remove());
+    modal.querySelector(".btn-download").addEventListener("click", () => this.downloadFile(downloadUrl));
+    modal.querySelector(".btn-share").addEventListener("click", () => this.shareFile(viewUrl, name));
 
     modal.addEventListener("click", (e) => {
       if (e.target === modal) modal.remove();
@@ -467,8 +480,7 @@ class Dashboard {
       if (this.currentType === "calendar") {
         return (
           item.event_name.toLowerCase().includes(query) ||
-          (item.event_description &&
-            item.event_description.toLowerCase().includes(query))
+          (item.event_description && item.event_description.toLowerCase().includes(query))
         );
       }
       return item.file_name.toLowerCase().includes(query);

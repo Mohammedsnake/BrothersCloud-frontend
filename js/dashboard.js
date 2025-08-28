@@ -1,4 +1,3 @@
-// public/js/dashboard.js
 const API_BASE = "https://brotherscloud-1.onrender.com/api";
 
 /* ===========================
@@ -383,17 +382,25 @@ class Dashboard {
   }
 
   downloadFile(url, ext = "") {
-    // Restrict document downloads
-    if (["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
+    const restrictedExts = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"];
+
+    if (restrictedExts.includes(ext.toLowerCase())) {
       utils.showToast(
         "Samahani 🙏🏽 Kwa sasa huwezi kudownload faili za PDF, Word au Excel. Huduma hii itapatikana hivi karibuni. Unaweza bado kutuma mafile hayo, na yatabaki salama kabisa ✔️",
         "error"
       );
-      return;
+      return; // stop navigation
     }
 
-    window.open(url, "_blank");
-    utils.showToast("Download started");
+    // ✅ Safe files can download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = url.split("/").pop();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    utils.showToast("Download started 📥", "success");
   }
 
   async shareFile(url, name) {
@@ -420,17 +427,12 @@ class Dashboard {
     } else if (type === "video") {
       bodyContent = `<video src="${viewUrl}" controls autoplay></video>`;
     } else if (ext === "pdf") {
-      bodyContent = `
-        <iframe src="${viewUrl}" width="100%" height="600px" style="border:none;"></iframe>
-      `;
+      bodyContent = `<iframe src="${viewUrl}" width="100%" height="600px" style="border:none;"></iframe>`;
     } else if (["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
-      const gview = `https://docs.google.com/gview?url=${encodeURIComponent(downloadUrl)}&embedded=true`;
-      bodyContent = `
-        <iframe src="${gview}" width="100%" height="600px" style="border:none;"></iframe>
-      `;
+      const gview = `https://docs.google.com/gview?url=${encodeURIComponent(viewUrl)}&embedded=true`;
+      bodyContent = `<iframe src="${gview}" width="100%" height="600px" style="border:none;"></iframe>`;
     } else {
-      bodyContent = `
-        <div class="file-icon ${this.getDocumentIconClass(ext)}"></div>
+      bodyContent = `<div class="file-icon ${this.getDocumentIconClass(ext)}"></div>
         <p>Cannot preview this file.</p>`;
     }
 
@@ -449,6 +451,8 @@ class Dashboard {
     `;
 
     modal.querySelector(".btn-close").addEventListener("click", () => modal.remove());
+
+    // FIX: respect restriction even from modal
     modal.querySelector(".btn-download").addEventListener("click", () => this.downloadFile(downloadUrl, ext));
     modal.querySelector(".btn-share").addEventListener("click", () => this.shareFile(viewUrl, name));
 

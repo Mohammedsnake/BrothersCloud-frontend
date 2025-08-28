@@ -120,7 +120,7 @@ class Dashboard {
 
   async loadData(type) {
     try {
-      utils.showLoader(); // Show spinner
+      utils.showLoader();
       const url =
         type === "calendar"
           ? `${API_BASE}/events?user_id=${this.user.user_id}`
@@ -152,7 +152,7 @@ class Dashboard {
         </div>
       `;
     } finally {
-      utils.hideLoader(); // Hide spinner
+      utils.hideLoader();
     }
   }
 
@@ -303,12 +303,8 @@ class Dashboard {
                     <span class="file-date">${file.uploaded_at ? utils.formatDate(file.uploaded_at) : ""}</span>
                   </div>
                   <div class="file-actions">
-                    <button class="btn-download" data-url="${downloadUrl}">
-                      <i class="icon-download"></i>
-                    </button>
-                    <button class="btn-share" data-url="${viewUrl}" data-name="${file.file_name}">
-                      <i class="icon-share"></i>
-                    </button>
+                    <button class="btn-download" data-url="${downloadUrl}" data-ext="${ext}"><i class="icon-download"></i></button>
+                    <button class="btn-share" data-url="${viewUrl}" data-name="${file.file_name}"><i class="icon-share"></i></button>
                   </div>
                 </div>
               </div>
@@ -374,7 +370,7 @@ class Dashboard {
     document.querySelectorAll(".btn-download").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.downloadFile(btn.dataset.url);
+        this.downloadFile(btn.dataset.url, btn.dataset.ext);
       });
     });
 
@@ -386,7 +382,16 @@ class Dashboard {
     });
   }
 
-  downloadFile(url) {
+  downloadFile(url, ext = "") {
+    // Restrict document downloads
+    if (["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
+      utils.showToast(
+        "Samahani 🙏🏽 Kwa sasa huwezi kudownload faili za PDF, Word au Excel. Huduma hii itapatikana hivi karibuni. Unaweza bado kutuma mafile hayo, na yatabaki salama kabisa ✔️",
+        "error"
+      );
+      return;
+    }
+
     window.open(url, "_blank");
     utils.showToast("Download started");
   }
@@ -414,22 +419,19 @@ class Dashboard {
       bodyContent = `<img src="${viewUrl}" alt="${name}">`;
     } else if (type === "video") {
       bodyContent = `<video src="${viewUrl}" controls autoplay></video>`;
-    } else if (["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
-      const gview = `https://docs.google.com/gview?url=${encodeURIComponent(viewUrl)}&embedded=true`;
+    } else if (ext === "pdf") {
       bodyContent = `
-        <div class="gdoc-viewer-wrapper">
-          <iframe src="${gview}" width="100%" height="600px" style="border:none;"></iframe>
-          <div class="viewer-download">
-            <a href="${downloadUrl}" target="_blank" class="btn btn-download">
-              <i class="icon-download"></i> Download
-            </a>
-          </div>
-        </div>
+        <iframe src="${viewUrl}" width="100%" height="600px" style="border:none;"></iframe>
+      `;
+    } else if (["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
+      const gview = `https://docs.google.com/gview?url=${encodeURIComponent(downloadUrl)}&embedded=true`;
+      bodyContent = `
+        <iframe src="${gview}" width="100%" height="600px" style="border:none;"></iframe>
       `;
     } else {
       bodyContent = `
         <div class="file-icon ${this.getDocumentIconClass(ext)}"></div>
-        <p>Cannot preview this file. Click Download to open.</p>`;
+        <p>Cannot preview this file.</p>`;
     }
 
     modal.innerHTML = `
@@ -447,7 +449,7 @@ class Dashboard {
     `;
 
     modal.querySelector(".btn-close").addEventListener("click", () => modal.remove());
-    modal.querySelector(".btn-download").addEventListener("click", () => this.downloadFile(downloadUrl));
+    modal.querySelector(".btn-download").addEventListener("click", () => this.downloadFile(downloadUrl, ext));
     modal.querySelector(".btn-share").addEventListener("click", () => this.shareFile(viewUrl, name));
 
     modal.addEventListener("click", (e) => {

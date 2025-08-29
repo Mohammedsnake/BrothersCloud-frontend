@@ -21,7 +21,10 @@ const utils = {
 
   handleError: (error) => {
     console.error("Error:", error);
-    utils.showToast(error.message || "An error occurred", "error");
+    utils.showToast(
+      error.message || error.error || "An error occurred",
+      "error"
+    );
   },
 
   formatDate: (dateString) => {
@@ -77,6 +80,7 @@ class Dashboard {
     this.setupEventListeners();
     this.displayUserInfo();
     await this.loadData(this.currentType);
+    await this.loadBirthdays(); // 🎂 Birthday reminder
   }
 
   cacheElements() {
@@ -87,6 +91,7 @@ class Dashboard {
       uploadBtn: document.getElementById("uploadBtn"),
       userName: document.getElementById("userName"),
       logoutBtn: document.getElementById("logoutBtn"),
+      birthdayBox: document.getElementById("birthdayBox"), // 🎂 Added
     };
   }
 
@@ -222,11 +227,13 @@ class Dashboard {
 
           if (diffDays === 3 && !ev.notified_before) {
             new Notification(`Upcoming Event: ${ev.event_name}`, {
-              body: `Event in 3 days: ${ev.event_description || "No description"}`,
+              body: `Event in 3 days: ${
+                ev.event_description || "No description"
+              }`,
             });
 
             try {
-              await fetch(`${API_BASE}/events/${ev.id}/notify-before`, {
+              await fetch(`${API_BASE}/events/${ev.event_id}/notify-before`, {
                 method: "PATCH",
                 headers: { Authorization: `Bearer ${this.token}` },
               });
@@ -252,7 +259,10 @@ class Dashboard {
       const now = new Date();
       this.events.forEach((ev) => {
         const eventDate = new Date(ev.event_date);
-        if (eventDate.toDateString() === now.toDateString() && !ev.notified_today) {
+        if (
+          eventDate.toDateString() === now.toDateString() &&
+          !ev.notified_today
+        ) {
           new Notification(`Today's Event: ${ev.event_name}`, {
             body: ev.event_description || "No description",
           });
@@ -260,6 +270,49 @@ class Dashboard {
         }
       });
     });
+  }
+
+  /* ===========================
+     Birthdays 🎂
+  =========================== */
+  async loadBirthdays() {
+    try {
+      const response = await fetch(`${API_BASE}/birthdays`, {
+        headers: { Authorization: `Bearer ${this.token}` },
+      });
+      if (!response.ok) throw new Error("Failed to fetch birthdays");
+
+      const data = await response.json();
+      const birthdays = Array.isArray(data) ? data : data.birthdays || [];
+
+      if (birthdays.length > 0) {
+        this.elements.birthdayBox.style.display = "block"; // show the box
+        this.elements.birthdayBox.innerHTML = `
+          <h3>🎂 Upcoming Birthdays</h3>
+          <ul>
+            ${birthdays
+              .map((u) => {
+                const dob = new Date(u.date_of_birth);
+                const now = new Date();
+                dob.setFullYear(now.getFullYear());
+
+                const diffDays = Math.ceil(
+                  (dob - now) / (1000 * 60 * 60 * 24)
+                );
+
+                return `<li>🎉 ${u.first_name} ${u.last_name}'s birthday is in ${diffDays} day(s) — (${utils.formatDate(
+                  u.date_of_birth
+                )})</li>`;
+              })
+              .join("")}
+          </ul>
+        `;
+      } else {
+        this.elements.birthdayBox.style.display = "none";
+      }
+    } catch (err) {
+      console.error("Birthday fetch error:", err);
+    }
   }
 
   /* ===========================
@@ -271,9 +324,14 @@ class Dashboard {
         ${files
           .map((file) => {
             const viewUrl = file.view_url || file.cloudinary_url || "#";
-            const downloadUrl = file.download_url || this.makeAttachmentUrl(viewUrl, file.file_name);
+            const downloadUrl =
+              file.download_url ||
+              this.makeAttachmentUrl(viewUrl, file.file_name);
 
-            const ext = (file.file_name || "unknown").split(".").pop().toLowerCase();
+            const ext = (file.file_name || "unknown")
+              .split(".")
+              .pop()
+              .toLowerCase();
             let normalizedType = (file.file_type || "document").toLowerCase();
 
             let previewContent = "";
@@ -284,7 +342,9 @@ class Dashboard {
             } else if (ext === "pdf") {
               previewContent = `<div class="file-icon pdf"></div>`;
             } else {
-              previewContent = `<div class="file-icon ${this.getDocumentIconClass(ext)}"></div>`;
+              previewContent = `<div class="file-icon ${this.getDocumentIconClass(
+                ext
+              )}"></div>`;
             }
 
             return `
@@ -298,8 +358,14 @@ class Dashboard {
                 <div class="file-info">
                   <div class="file-name" title="${file.file_name}">${file.file_name}</div>
                   <div class="file-meta">
-                    <span class="file-size">${this.formatFileSize(file.file_size)}</span>
-                    <span class="file-date">${file.uploaded_at ? utils.formatDate(file.uploaded_at) : ""}</span>
+                    <span class="file-size">${this.formatFileSize(
+                      file.file_size
+                    )}</span>
+                    <span class="file-date">${
+                      file.uploaded_at
+                        ? utils.formatDate(file.uploaded_at)
+                        : ""
+                    }</span>
                   </div>
                   <div class="file-actions">
                     <button class="btn-download" data-url="${downloadUrl}" data-ext="${ext}"><i class="icon-download"></i></button>
@@ -317,12 +383,12 @@ class Dashboard {
   makeAttachmentUrl(viewUrl, fileName = "file") {
     try {
       const url = new URL(viewUrl);
-      const parts = url.pathname.split('/');
-      const uploadIdx = parts.findIndex((p) => p === 'upload');
+      const parts = url.pathname.split("/");
+      const uploadIdx = parts.findIndex((p) => p === "upload");
       if (uploadIdx !== -1) {
-        const safe = fileName.replace(/[^\w.\-()\s]/g, '_') || 'file';
+        const safe = fileName.replace(/[^\w.\-()\s]/g, "_") || "file";
         parts.splice(uploadIdx + 1, 0, `fl_attachment:${safe}`);
-        url.pathname = parts.join('/');
+        url.pathname = parts.join("/");
         return url.toString();
       }
     } catch (_) {}
@@ -382,17 +448,24 @@ class Dashboard {
   }
 
   downloadFile(url, ext = "") {
-    const restrictedExts = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"];
+    const restrictedExts = [
+      "pdf",
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+    ];
 
     if (restrictedExts.includes(ext.toLowerCase())) {
       utils.showToast(
         "Samahani 🙏🏽 Kwa sasa huwezi kudownload faili za PDF, Word au Excel. Huduma hii itapatikana hivi karibuni. Unaweza bado kutuma mafile hayo, na yatabaki salama kabisa ✔️",
         "error"
       );
-      return; // stop navigation
+      return;
     }
 
-    // ✅ Safe files can download
     const a = document.createElement("a");
     a.href = url;
     a.download = url.split("/").pop();
@@ -428,11 +501,17 @@ class Dashboard {
       bodyContent = `<video src="${viewUrl}" controls autoplay></video>`;
     } else if (ext === "pdf") {
       bodyContent = `<iframe src="${viewUrl}" width="100%" height="600px" style="border:none;"></iframe>`;
-    } else if (["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)) {
-      const gview = `https://docs.google.com/gview?url=${encodeURIComponent(viewUrl)}&embedded=true`;
+    } else if (
+      ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)
+    ) {
+      const gview = `https://docs.google.com/gview?url=${encodeURIComponent(
+        viewUrl
+      )}&embedded=true`;
       bodyContent = `<iframe src="${gview}" width="100%" height="600px" style="border:none;"></iframe>`;
     } else {
-      bodyContent = `<div class="file-icon ${this.getDocumentIconClass(ext)}"></div>
+      bodyContent = `<div class="file-icon ${this.getDocumentIconClass(
+        ext
+      )}"></div>
         <p>Cannot preview this file.</p>`;
     }
 
@@ -450,11 +529,18 @@ class Dashboard {
       </div>
     `;
 
-    modal.querySelector(".btn-close").addEventListener("click", () => modal.remove());
+    modal
+      .querySelector(".btn-close")
+      .addEventListener("click", () => modal.remove());
 
-    // FIX: respect restriction even from modal
-    modal.querySelector(".btn-download").addEventListener("click", () => this.downloadFile(downloadUrl, ext));
-    modal.querySelector(".btn-share").addEventListener("click", () => this.shareFile(viewUrl, name));
+    modal
+      .querySelector(".btn-download")
+      .addEventListener("click", () =>
+        this.downloadFile(downloadUrl, ext)
+      );
+    modal
+      .querySelector(".btn-share")
+      .addEventListener("click", () => this.shareFile(viewUrl, name));
 
     modal.addEventListener("click", (e) => {
       if (e.target === modal) modal.remove();
@@ -486,7 +572,8 @@ class Dashboard {
       if (this.currentType === "calendar") {
         return (
           item.event_name.toLowerCase().includes(query) ||
-          (item.event_description && item.event_description.toLowerCase().includes(query))
+          (item.event_description &&
+            item.event_description.toLowerCase().includes(query))
         );
       }
       return item.file_name.toLowerCase().includes(query);
